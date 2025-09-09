@@ -18,6 +18,7 @@
     <!-- JSON-LD Structured Data -->
     <b:if cond='data:view.isPost'>
       <script type='application/ld+json'>
+      //<![CDATA[
       {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
@@ -42,6 +43,7 @@
         "datePublished": "<data:post.timestampISO8601/>",
         "dateModified": "<data:post.lastUpdatedISO8601/>"
       }
+      //]]>
       </script>
     </b:if>
 
@@ -68,7 +70,9 @@
           <!-- Mobile Menu Button -->
           <div class='md:hidden'>
             <button id='mobile-menu-button' class='text-gray-600 hover:text-blue-500 focus:outline-none'>
-              <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M4 6h16M4 12h16m-7 6h7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/></svg>
+              <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+                <path d='M4 6h16M4 12h16m-7 6h7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/>
+              </svg>
             </button>
           </div>
 
@@ -93,7 +97,12 @@
           <b:section class='main' id='main' showaddelement='yes'>
             <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' version='2'>
               <b:includable id='main'>
+                <!-- Post Loop -->
                 <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='post'/>
+                </b:loop>
+              </b:includable>
+              <b:includable id='post' var='post'>
                   <article class='bg-white shadow-md rounded-lg p-6 mb-6'>
                     <h2 class='text-3xl font-bold mb-2'><a expr:href='data:post.url'><data:post.title/></a></h2>
                     <p class='text-gray-500 text-sm mb-4'><data:post.timestamp/></p>
@@ -101,7 +110,6 @@
                       <data:post.body/>
                     </div>
                   </article>
-                </b:loop>
               </b:includable>
             </b:widget>
           </b:section>
