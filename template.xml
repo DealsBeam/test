@@ -137,15 +137,45 @@
         <main class='md:col-span-2'>
           <b:section class='main' id='main' showaddelement='yes'>
             <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' version='2'>
-              <b:includable id='main'>
-                <b:include name='breadcrumbs'/>
-                <!-- Post Loop -->
-                <b:loop values='data:posts' var='post'>
-                  <b:include data='post' name='post'/>
-                </b:loop>
+              <b:includable id='main' var='this'>
+                <b:if cond='data:view.isError or data:posts.empty'>
+                  <div class='bg-white shadow-md rounded-lg p-6 mb-6'>
+                    <p>No posts found.</p>
+                  </div>
+                <b:else/>
+                  <b:if cond='data:view.isMultipleItems'>
+                    <!-- Archive/Index View -->
+                    <b:include name='breadcrumbs'/>
+                    <b:loop values='data:posts' var='post'>
+                      <b:include data='post' name='postSnippet'/>
+                    </b:loop>
+                  <b:else/>
+                    <!-- Single Item View -->
+                    <b:loop values='data:posts' var='post'>
+                      <b:include data='post' name='post'/>
+                    </b:loop>
+                  </b:if>
+                </b:if>
               </b:includable>
-              <!-- Breadcrumbs Navigation -->
-              <!-- Displays a navigational trail, e.g., Home > Category > Post Title -->
+              <b:includable id='post' var='post'>
+                <b:include name='breadcrumbs'/>
+                <article class='bg-white shadow-md rounded-lg p-6 mb-6'>
+                  <h1 class='text-4xl font-bold mb-2'><data:post.title/></h1>
+                  <p class='text-gray-500 text-sm mb-4'><data:post.timestamp/></p>
+                  <div class='prose max-w-none'><data:post.body/></div>
+                </article>
+                <b:if cond='data:post.allowComments'>
+                  <b:include data='post' name='commentPicker'/>
+                </b:if>
+              </b:includable>
+              <b:includable id='postSnippet' var='post'>
+                  <article class='bg-white shadow-md rounded-lg p-6 mb-6'>
+                    <h2 class='text-3xl font-bold mb-2'><a expr:href='data:post.url'><data:post.title/></a></h2>
+                    <p class='text-gray-500 text-sm mb-4'><data:post.timestamp/></p>
+                    <div class='prose max-w-none'><data:post.snippet/></div>
+                    <a expr:href='data:post.url' class='text-blue-600 hover:underline mt-4 inline-block'>Read More...</a>
+                  </article>
+              </b:includable>
               <b:includable id='breadcrumbs'>
                 <div class='text-sm text-gray-500 mb-4'>
                   <a class='hover:text-blue-500' expr:href='data:blog.homepageUrl'>Home</a>
@@ -170,18 +200,6 @@
                     <span>Search results for <data:view.search.query/></span>
                   </b:if>
                 </div>
-              </b:includable>
-              <b:includable id='post' var='post'>
-                  <article class='bg-white shadow-md rounded-lg p-6 mb-6'>
-                    <h2 class='text-3xl font-bold mb-2'><a expr:href='data:post.url'><data:post.title/></a></h2>
-                    <p class='text-gray-500 text-sm mb-4'><data:post.timestamp/></p>
-                    <div class='prose max-w-none'>
-                      <data:post.body/>
-                    </div>
-                    <b:if cond='data:post.allowComments'>
-                      <b:include data='post' name='commentPicker'/>
-                    </b:if>
-                  </article>
               </b:includable>
               <b:includable id='commentPicker' var='post'>
                 <div class='comments' id='comments'>
