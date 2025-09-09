@@ -72,6 +72,48 @@
       html.dark .text-gray-900 { color: #f9fafb; }
       html.dark .text-blue-600 { color: #3b82f6; }
       html.dark a { color: $(primaryColor); }
+
+      /* Layout Switcher Styles */
+      #posts-container.grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+      }
+      #posts-container.grid .post-snippet {
+        margin-bottom: 0;
+      }
+
+      /* Enhanced Hover Effects */
+      a, button, .post-snippet {
+        transition: all .2s ease-in-out;
+      }
+
+      .post-snippet:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);
+      }
+
+      #dark-mode-toggle:hover, #font-resizer button:hover, #layout-switcher button:hover {
+        transform: scale(1.1);
+        color: $(primaryColor) !important;
+      }
+
+      .footer a {
+        display: inline-block; /* for transform */
+      }
+
+      .footer a:hover {
+        transform: scale(1.2);
+        color: $(primaryColor) !important;
+      }
+
+      /* Navigation links hover effect */
+      .header-nav a, .header-nav-mobile a {
+        display: inline-block;
+      }
+      .header-nav a:hover, .header-nav-mobile a:hover {
+        transform: scale(1.05);
+      }
     ]]></b:skin>
   </head>
 
@@ -105,6 +147,14 @@
                   <button id='font-decrease' class='px-2'>A-</button>
                   <button id='font-reset' class='px-2'>A</button>
                   <button id='font-increase' class='px-2'>A+</button>
+                </div>
+              </b:includable>
+            </b:widget>
+            <b:widget id='HTML103' locked='true' title='Layout Switcher' type='HTML' version='2'>
+              <b:includable id='main'>
+                <div id='layout-switcher' class='flex items-center text-gray-600 ml-2'>
+                  <button id='grid-view' class='px-2' title='Grid View'><svg class='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'/></svg></button>
+                  <button id='list-view' class='px-2' title='List View'><svg class='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 6h16M4 10h16M4 14h16M4 18h16'/></svg></button>
                 </div>
               </b:includable>
             </b:widget>
@@ -144,11 +194,26 @@
                   </div>
                 <b:else/>
                   <b:if cond='data:view.isMultipleItems'>
-                    <!-- Archive/Index View -->
-                    <b:include name='breadcrumbs'/>
-                    <b:loop values='data:posts' var='post'>
-                      <b:include data='post' name='postSnippet'/>
-                    </b:loop>
+                    <b:if cond='data:view.isHomepage'>
+                      <!-- Homepage Featured Post Layout -->
+                      <b:include name='breadcrumbs'/>
+                      <b:loop values='data:posts' var='post' take='1'>
+                        <b:include data='post' name='featuredPostSnippet'/>
+                      </b:loop>
+                      <div id='posts-container' class='mt-8'>
+                        <b:loop values='data:posts' var='post' skip='1'>
+                          <b:include data='post' name='postSnippet'/>
+                        </b:loop>
+                      </div>
+                    <b:else/>
+                      <!-- Default Archive/Index View -->
+                      <b:include name='breadcrumbs'/>
+                      <div id='posts-container'>
+                        <b:loop values='data:posts' var='post'>
+                          <b:include data='post' name='postSnippet'/>
+                        </b:loop>
+                      </div>
+                    </b:if>
                   <b:else/>
                     <!-- Single Item View -->
                     <b:loop values='data:posts' var='post'>
@@ -168,8 +233,27 @@
                   <b:include data='post' name='commentPicker'/>
                 </b:if>
               </b:includable>
+              <b:includable id='featuredPostSnippet' var='post'>
+                <article class='featured-post-snippet bg-white shadow-md rounded-lg p-6'>
+                  <div expr:class='data:post.firstImageUrl ? "grid md:grid-cols-5 gap-6 items-center" : ""'>
+                    <b:if cond='data:post.firstImageUrl'>
+                      <div class='featured-post-image md:col-span-2'>
+                        <a expr:href='data:post.url'>
+                          <img expr:src='resizeImage(data:post.firstImageUrl, 1200, "16:9")' class='rounded-lg w-full'/>
+                        </a>
+                      </div>
+                    </b:if>
+                    <div expr:class='data:post.firstImageUrl ? "featured-post-content md:col-span-3" : "featured-post-content"'>
+                      <h2 class='text-4xl font-bold mb-2'><a expr:href='data:post.url'><data:post.title/></a></h2>
+                      <p class='text-gray-500 text-sm mb-4'><data:post.timestamp/></p>
+                      <div class='prose max-w-none mb-4'><data:post.snippet/></div>
+                      <a expr:href='data:post.url' class='text-blue-600 hover:underline inline-block'>Read More...</a>
+                    </div>
+                  </div>
+                </article>
+              </b:includable>
               <b:includable id='postSnippet' var='post'>
-                  <article class='bg-white shadow-md rounded-lg p-6 mb-6'>
+                  <article class='post-snippet bg-white shadow-md rounded-lg p-6 mb-6'>
                     <h2 class='text-3xl font-bold mb-2'><a expr:href='data:post.url'><data:post.title/></a></h2>
                     <p class='text-gray-500 text-sm mb-4'><data:post.timestamp/></p>
                     <div class='prose max-w-none'><data:post.snippet/></div>
@@ -227,6 +311,29 @@
       <!-- Footer -->
       <footer class='text-center text-gray-500 mt-8'>
         <b:section class='footer' id='footer' showaddelement='yes'>
+          <b:widget id='LinkList100' locked='false' title='Social Media' type='LinkList' version='2'>
+            <b:includable id='main'>
+              <div class='flex justify-center space-x-4 mb-4'>
+                <b:loop values='data:links' var='link'>
+                  <a expr:href='data:link.target' class='text-gray-500 hover:text-blue-500' target='_blank' expr:title='data:link.name'>
+                    <svg class='w-6 h-6' fill='currentColor'>
+                      <b:if cond='data:link.target contains "twitter.com"'>
+                        <use xlink:href='#icon-twitter'/>
+                      <b:elseif cond='data:link.target contains "facebook.com"'/>
+                        <use xlink:href='#icon-facebook'/>
+                      <b:elseif cond='data:link.target contains "instagram.com"'/>
+                        <use xlink:href='#icon-instagram'/>
+                      <b:elseif cond='data:link.target contains "linkedin.com"'/>
+                        <use xlink:href='#icon-linkedin'/>
+                      <b:else/>
+                        <use xlink:href='#icon-link'/>
+                      </b:if>
+                    </svg>
+                  </a>
+                </b:loop>
+              </div>
+            </b:includable>
+          </b:widget>
           <b:widget id='Text2' locked='false' title='Copyright' type='Text' version='2'>
             <b:includable id='main'>
               <p>&amp;copy; <data:blog.title/> <data:blog.initialYear/>. All rights reserved.</p>
@@ -249,6 +356,22 @@
               <symbol id='icon-menu' viewBox='0 0 24 24'>
                 <path d='M4 6h16M4 12h16m-7 6h7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/>
               </symbol>
+              <!-- Social Media Icons -->
+              <symbol id='icon-twitter' viewBox='0 0 24 24' fill='currentColor'>
+                <path d='M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482A13.92 13.92 0 011.671 3.149a4.923 4.923 0 001.523 6.573 4.902 4.902 0 01-2.228-.616v.061a4.923 4.923 0 003.946 4.827 4.902 4.902 0 01-2.223.084 4.923 4.923 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.213 0-.425-.015-.637a9.935 9.935 0 002.45-2.548z'/>
+              </symbol>
+              <symbol id='icon-facebook' viewBox='0 0 24 24' fill='currentColor'>
+                <path d='M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z'/>
+              </symbol>
+              <symbol id='icon-instagram' viewBox='0 0 24 24' fill='currentColor'>
+                <path d='M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.585-.069 4.85c-.149 3.225-1.667 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.585-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.585.069-4.85c.149-3.225 1.667-4.771 4.919-4.919C8.415 2.175 8.796 2.163 12 2.163zm0 1.802c-3.116 0-3.472.012-4.68.068-2.633.12-3.613 1.104-3.732 3.732-.056 1.207-.068 1.562-.068 4.68s.012 3.473.068 4.68c.119 2.628 1.099 3.612 3.732 3.732 1.208.056 1.563.068 4.68.068s3.472-.012 4.68-.068c2.633-.12 3.613-1.104 3.732-3.732.056-1.207.068-1.562.068-4.68s-.012-3.473-.068-4.68c-.119-2.628-1.099-3.612-3.732-3.732C15.473 3.975 15.117 3.965 12 3.965zm0 2.978a5.062 5.062 0 100 10.124 5.062 5.062 0 000-10.124zM12 15a3 3 0 110-6 3 3 0 010 6zm6.5-9.25a1.25 1.25 0 100-2.5 1.25 1.25 0 000 2.5z'/>
+              </symbol>
+              <symbol id='icon-linkedin' viewBox='0 0 24 24' fill='currentColor'>
+                <path d='M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z'/>
+              </symbol>
+              <symbol id='icon-link' viewBox='0 0 24 24' fill='none' stroke='currentColor'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'/>
+              </symbol>
             </svg>
           </div>
         </b:includable>
@@ -258,17 +381,19 @@
     <b:defaultmarkups>
       <b:defaultmarkup type='LinkList'>
         <b:includable id='main'>
-          <b:if cond='data:title != &quot;&quot;'>
-            <h2 class='title'><data:title/></h2>
-          </b:if>
-          <div class='widget-content'>
-            <b:include name='content'/>
+          <div class='bg-white shadow-md rounded-lg p-6 mb-6'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h3 class='text-xl font-bold mb-4'><data:title/></h3>
+            </b:if>
+            <div class='widget-content'>
+              <b:include name='content'/>
+            </div>
           </div>
         </b:includable>
         <b:includable id='content'>
-          <ul>
+          <ul class='list-disc list-inside space-y-2'>
             <b:loop values='data:links' var='link'>
-              <li><a expr:href='data:link.target'><data:link.name/></a></li>
+              <li><a expr:href='data:link.target' class='text-blue-500 hover:underline'><data:link.name/></a></li>
             </b:loop>
           </ul>
         </b:includable>
@@ -369,6 +494,30 @@
         }, { threshold: 0.1 });
         observer.observe(commentsContainer);
       }
+
+      // Layout Switcher Logic
+      document.addEventListener('DOMContentLoaded', () => {
+        const postsContainer = document.getElementById('posts-container');
+        const gridViewButton = document.getElementById('grid-view');
+        const listViewButton = document.getElementById('list-view');
+
+        if (postsContainer && gridViewButton && listViewButton) {
+          const layout = localStorage.getItem('layout');
+          if (layout === 'grid') {
+            postsContainer.classList.add('grid');
+          }
+
+          gridViewButton.addEventListener('click', () => {
+            postsContainer.classList.add('grid');
+            localStorage.setItem('layout', 'grid');
+          });
+
+          listViewButton.addEventListener('click', () => {
+            postsContainer.classList.remove('grid');
+            localStorage.setItem('layout', 'list');
+          });
+        }
+      });
 
       //]]>
     </script>
