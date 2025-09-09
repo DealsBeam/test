@@ -49,6 +49,12 @@
 
     <b:skin><![CDATA[
       /*
+      =================================================================
+      THEME OPTIONS - Variables in this section can be edited from the
+      Blogger Theme Designer (Theme > Customize).
+      =================================================================
+      */
+      /*
       <Group description="Theme Colors">
         <Variable name="primaryColor" description="Primary Color" type="color" default="#2563eb" value="#2563eb"/>
         <Variable name="backgroundColor" description="Background Color" type="color" default="#f3f4f6" value="#f3f4f6"/>
@@ -83,10 +89,16 @@
             </b:widget>
           </b:section>
 
-          <!-- Dark Mode Toggle -->
-          <button id='dark-mode-toggle' aria-label='Toggle Dark Mode' class='text-gray-600 hover:text-blue-500 focus:outline-none mr-2'>
-            <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z'/></svg>
-          </button>
+          <b:section class='header-buttons' id='header-buttons' showaddelement='no'>
+            <b:widget id='HTML100' locked='true' title='Dark Mode Toggle' type='HTML' version='2'>
+              <b:includable id='main'>
+                <!-- Dark Mode Toggle - The JS for this is at the end of the body -->
+                <button id='dark-mode-toggle' aria-label='Toggle Dark Mode' class='text-gray-600 hover:text-blue-500 focus:outline-none mr-2'>
+                  <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z'/></svg>
+                </button>
+              </b:includable>
+            </b:widget>
+          </b:section>
 
           <!-- Mobile Menu Button -->
           <div class='md:hidden'>
@@ -124,6 +136,8 @@
                   <b:include data='post' name='post'/>
                 </b:loop>
               </b:includable>
+              <!-- Breadcrumbs Navigation -->
+              <!-- Displays a navigational trail, e.g., Home > Category > Post Title -->
               <b:includable id='breadcrumbs'>
                 <div class='text-sm text-gray-500 mb-4'>
                   <a class='hover:text-blue-500' expr:href='data:blog.homepageUrl'>Home</a>
